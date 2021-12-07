@@ -1,0 +1,1 @@
+cmd='/usr/bin/cmake;-DSDKCONFIG=/home/devhouse/projetos/esp32-cam-ota/sdkconfig;-DIDF_PATH=/home/devhouse/esp/esp-idf;-DIDF_TARGET=esp32;-DPYTHON_DEPS_CHECKED=1;-DPYTHON=/home/devhouse/.espressif/python_env/idf4.3_py2.7_env/bin/python;-DEXTRA_COMPONENT_DIRS=/home/devhouse/esp/esp-idf/components/bootloader;-DLEGACY_INCLUDE_COMMON_HEADERS=;-GNinja;<SOURCE_DIR><SOURCE_SUBDIR>'

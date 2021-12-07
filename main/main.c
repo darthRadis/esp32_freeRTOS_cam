@@ -9,7 +9,7 @@
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 
-#include "wifi.h"
+#include "wifi_sta.h"
 #include "ota_server.h"
 #include "webserver.h"
 #include "light.h"
@@ -28,7 +28,7 @@ void app_main() {
     ESP_ERROR_CHECK(ret);
 
     static httpd_handle_t server = NULL;
-    init_wifi_softap();
+    wifi_init_sta();
     init_ota_server();
     server = start_webserver();
     init_light();
