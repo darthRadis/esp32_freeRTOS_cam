@@ -5,6 +5,7 @@
 #include "esp_log.h"
 #include "esp_timer.h"
 
+#include "ota.h"
 #include "camera.h"
 #include "light.h"
 
@@ -296,6 +297,7 @@ httpd_handle_t start_webserver() {
         httpd_register_uri_handler(server, &capture_jpeg_uri);
         httpd_register_uri_handler(server, &settings_uri);
         httpd_register_uri_handler(server, &toggle_light_uri);
+	ota_register_uri_handler(&server);
         return server;
     }
     ESP_LOGI(TAG, "error starting server!");

@@ -1,4 +1,4 @@
-# Install script for directory: /home/devhouse/esp/esp-idf/components/soc
+# Install script for directory: /home/a11774/esp/esp-idf/components/soc
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,8 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/devhouse/projetos/esp32-cam-ota/build/esp-idf/soc/src/esp32/cmake_install.cmake")
-  include("/home/devhouse/projetos/esp32-cam-ota/build/esp-idf/soc/soc/cmake_install.cmake")
+  include("/home/a11774/projetos/esp32_freeRTOS_cam/build/esp-idf/soc/esp32/cmake_install.cmake")
 
 endif()
 

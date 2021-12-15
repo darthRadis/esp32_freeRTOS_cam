@@ -1,4 +1,4 @@
-# Install script for directory: /home/devhouse/esp/esp-idf/components/bootloader/subproject
+# Install script for directory: /home/a11774/esp/esp-idf/components/bootloader/subproject
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/devhouse/projetos/esp32-cam-ota/build/bootloader/esp-idf/cmake_install.cmake")
+  include("/home/a11774/projetos/esp32_freeRTOS_cam/build/bootloader/esp-idf/cmake_install.cmake")
 
 endif()
 
@@ -46,5 +46,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/devhouse/projetos/esp32-cam-ota/build/bootloader/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/a11774/projetos/esp32_freeRTOS_cam/build/bootloader/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

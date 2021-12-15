@@ -1,4 +1,4 @@
-#include "wifi.h"
+#include "wifi_ap.h"
 
 #include <string.h>
 
@@ -21,7 +21,7 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-void init_wifi_softap() {
+void wifi_init_softap() {
     tcpip_adapter_init();
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
@@ -34,9 +34,9 @@ void init_wifi_softap() {
 
     wifi_config_t wifi_config = {
         .ap = {
-            .ssid = CONFIG_WIFI_SSID,
-            .ssid_len = strlen(CONFIG_WIFI_SSID),
-            .password = CONFIG_WIFI_PASSWORD,
+            .ssid = "IntLab",//CONFIG_WIFI_SSID,
+            .ssid_len = strlen("IntLab"),
+            .password = "labcoproj",//CONFIG_WIFI_PASSWORD,
             .max_connection = CONFIG_MAX_STA_CONN,
             .authmode = WIFI_AUTH_WPA_WPA2_PSK
         },

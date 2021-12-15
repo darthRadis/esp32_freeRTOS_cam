@@ -1,4 +1,4 @@
-# Install script for directory: /home/devhouse/esp/esp-idf/components/esp_system/port
+# Install script for directory: /home/a11774/esp/esp-idf/components/esp_system/port
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/devhouse/projetos/esp32-cam-ota/build/esp-idf/esp_system/port/esp32/cmake_install.cmake")
+  include("/home/a11774/projetos/esp32_freeRTOS_cam/build/esp-idf/esp_system/port/soc/esp32/cmake_install.cmake")
 
 endif()
 

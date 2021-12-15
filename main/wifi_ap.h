@@ -1,6 +1,6 @@
 #ifndef WIFI_H
 #define WIFI_H
 
-void init_wifi_softap();
+void wifi_init_softap();
 
 #endif

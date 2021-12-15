@@ -1,4 +1,4 @@
-# Install script for directory: /home/devhouse/projetos/esp32-cam-ota/main
+# Install script for directory: /home/a11774/projetos/esp32_freeRTOS_cam/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
