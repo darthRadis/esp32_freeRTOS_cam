@@ -3,4 +3,4 @@ CMakeLists.txt
 main
 Makefile
 README.md
-sdkconfig
+sdkconfig.old

@@ -157,7 +157,7 @@ void wifi_init_sta(void)
         char mensagem[256];
         sprintf(mensagem,"http://emideia.com.br/aviso2.php?mensagem=%s",ip);
         esp_http_client_config_t config = {
-          .url = mensagem,//"http://emideia.com.br/aviso.php",
+          .url = mensagem,
           .event_handler = _http_event_handle ,
         };
         esp_http_client_handle_t client = esp_http_client_init(&config);

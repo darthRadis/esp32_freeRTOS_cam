@@ -282,6 +282,9 @@ static void disconnect_event_handler(void* arg, esp_event_base_t event_base,
 httpd_handle_t start_webserver() {
     httpd_handle_t server = NULL;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+    config.ctrl_port = 32768;
+    config.stack_size = 16284;
+    config.max_resp_headers = 50;
 
     ESP_LOGI(TAG, "starting server on port %d", config.server_port);
     if (httpd_start(&server, &config) == ESP_OK) {
