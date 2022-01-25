@@ -10,15 +10,17 @@
 #include "soc/rtc_cntl_reg.h"
 
 #include "wifi_sta.h"
-//#include "wifi_ap.h"
-//#include "ota_server.h"
 #include "webserver.h"
 #include "light.h"
 #include "camera.h"
+#include "pmstruct.h"
+#include "analisys.h"
 
 void app_main() {
     // disable brown detection
     WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+
+    pm = NULL;
 
     // initialize nvs
     esp_err_t ret = nvs_flash_init();
@@ -33,6 +35,7 @@ void app_main() {
     wifi_init_sta();
     //init_ota_server();
     server = start_webserver();
+    init_analisys();
     init_light();
     init_camera();
 }

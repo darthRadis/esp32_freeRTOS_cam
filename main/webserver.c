@@ -5,6 +5,8 @@
 #include "esp_log.h"
 #include "esp_timer.h"
 
+#include "pmview.h"
+#include "pmstruct.h"
 #include "ota.h"
 #include "camera.h"
 #include "light.h"
@@ -13,8 +15,8 @@
 
 static const char* TAG = "http_server";
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
-static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
-static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
+//static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
+//static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
 
 typedef struct {
         httpd_req_t *req;
@@ -33,8 +35,10 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     return len;
 }
 
-esp_err_t stream_jpeg_handler(httpd_req_t* req) {
-    camera_fb_t* fb = NULL;
+void stream_jpeg_task(void* rel) {
+  //pmstructInclui(&pm,2,11);
+  //httpd_req_t* req=(httpd_req_t*)rel;
+    /*camera_fb_t* fb = NULL;
     esp_err_t res = ESP_OK;
     size_t _jpeg_buf_len;
     uint8_t* _jpeg_buf;
@@ -45,11 +49,9 @@ esp_err_t stream_jpeg_handler(httpd_req_t* req) {
     }
 
     res = httpd_resp_set_type(req, _STREAM_CONTENT_TYPE);
-    if(res != ESP_OK) {
-        return res;
-    }
 
-    while (true) {
+    while (res == ESP_OK) {
+    //if(res == ESP_OK) {
         fb = esp_camera_fb_get();
         if (!fb) {
             ESP_LOGE(TAG, "camera capture failed");
@@ -81,23 +83,35 @@ esp_err_t stream_jpeg_handler(httpd_req_t* req) {
             free(_jpeg_buf);
         }
         esp_camera_fb_return(fb);
-        if (res != ESP_OK) {
-            break;
+        if (res == ESP_OK) {
+          int64_t fr_end = esp_timer_get_time();
+          int64_t frame_time = fr_end - last_frame;
+          last_frame = fr_end;
+          frame_time /= 1000;
+          ESP_LOGI(TAG, "mjpeg: %uKB %ums (%.1ffps)",
+              (uint32_t) (_jpeg_buf_len/1024),
+              (uint32_t) frame_time, 1000.0 / (uint32_t) frame_time);
         }
-        int64_t fr_end = esp_timer_get_time();
-        int64_t frame_time = fr_end - last_frame;
-        last_frame = fr_end;
-        frame_time /= 1000;
-        ESP_LOGI(TAG, "mjpeg: %uKB %ums (%.1ffps)",
-            (uint32_t) (_jpeg_buf_len/1024),
-            (uint32_t) frame_time, 1000.0 / (uint32_t) frame_time);
     }
 
     last_frame = 0;
-    return res;
+    */
+    //pmstructInclui(&pm,3,11);
+}
+
+esp_err_t stream_jpeg_handler(httpd_req_t* req) {
+  pmstructInclui(&pm,0,11);
+  esp_err_t retorno;
+  TaskHandle_t xHandler=NULL;
+  xTaskCreate(stream_jpeg_task,"stream",10240,NULL,tskIDLE_PRIORITY-1,&xHandler);
+  retorno= httpd_resp_set_type(req, _STREAM_CONTENT_TYPE);
+  httpd_resp_send_chunk(req,"resposta",9);
+  pmstructInclui(&pm,1,11);
+  return retorno;
 }
 
 esp_err_t capture_bmp_handler(httpd_req_t* req) {
+    pmstructInclui(&pm,0,12);
     camera_fb_t* fb = NULL;
     esp_err_t res = ESP_OK;
     int64_t fr_start = esp_timer_get_time();
@@ -106,65 +120,75 @@ esp_err_t capture_bmp_handler(httpd_req_t* req) {
     if (!fb) {
         ESP_LOGE(TAG, "Camera capture failed");
         httpd_resp_send_500(req);
-        return ESP_FAIL;
+        res=ESP_FAIL;
     }
-
-    uint8_t* buf = NULL;
-    size_t buf_len = 0;
-    bool converted = frame2bmp(fb, &buf, &buf_len);
-    esp_camera_fb_return(fb);
-    if (!converted) {
+    else{
+      uint8_t* buf = NULL;
+      size_t buf_len = 0;
+      bool converted = frame2bmp(fb, &buf, &buf_len);
+      esp_camera_fb_return(fb);
+      if (converted){
+        res = httpd_resp_set_type(req, "image/x-windows-bmp") ||
+        httpd_resp_set_hdr(req, "Content-Disposition", 
+            "inline; filename=capture.bmp") ||
+        httpd_resp_send(req, (const char*) buf, buf_len);
+        free(buf);
+        int64_t fr_end = esp_timer_get_time();
+        ESP_LOGI(TAG, "BMP: %uKB %ums",
+            (uint32_t) (buf_len / 1024), (uint32_t) ((fr_end - fr_start) / 1000));
+      }
+      else{
         ESP_LOGE(TAG, "BMP conversion failed");
         httpd_resp_send_500(req);
-        return ESP_FAIL;
-    }
+        res = ESP_FAIL;
+      }
 
-    res = httpd_resp_set_type(req, "image/x-windows-bmp") ||
-          httpd_resp_set_hdr(req, "Content-Disposition", 
-                             "inline; filename=capture.bmp") ||
-          httpd_resp_send(req, (const char*) buf, buf_len);
-    free(buf);
-    int64_t fr_end = esp_timer_get_time();
-    ESP_LOGI(TAG, "BMP: %uKB %ums",
-        (uint32_t) (buf_len / 1024), (uint32_t) ((fr_end - fr_start) / 1000));
+    }
+    pmstructInclui(&pm,1,12);
     return res;
 }
 
 esp_err_t capture_jpeg_handler(httpd_req_t *req) {
+    pmstructInclui(&pm,0,13);
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
     size_t fb_len = 0;
     int64_t fr_start = esp_timer_get_time();
 
     fb = esp_camera_fb_get();
-    if (!fb) {
-        ESP_LOGE(TAG, "Camera capture failed");
-        httpd_resp_send_500(req);
-        return ESP_FAIL;
-    }
-    res = httpd_resp_set_type(req, "image/jpeg");
-    if (res == ESP_OK) {
+    if (fb){
+      res = httpd_resp_set_type(req, "image/jpeg");
+      if (res == ESP_OK) {
         res = httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=capture.jpg");
-    }
 
-    if (res == ESP_OK) {
-        if (fb->format == PIXFORMAT_JPEG) {
+        if (res == ESP_OK) {
+          if (fb->format == PIXFORMAT_JPEG) {
             fb_len = fb->len;
             res = httpd_resp_send(req, (const char *) fb->buf, fb->len);
-        } else {
+          } else {
             jpg_chunking_t jchunk = { req, 0 };
             res = frame2jpg_cb(fb, 80, jpg_encode_stream, &jchunk) ? ESP_OK : ESP_FAIL;
             httpd_resp_send_chunk(req, NULL, 0);
             fb_len = jchunk.len;
+          }
         }
+      }
+      esp_camera_fb_return(fb);
+      int64_t fr_end = esp_timer_get_time();
+      ESP_LOGI(TAG, "JPG: %uKB %ums", (uint32_t) (fb_len/1024), (uint32_t) ((fr_end - fr_start) / 1000));
     }
-    esp_camera_fb_return(fb);
-    int64_t fr_end = esp_timer_get_time();
-    ESP_LOGI(TAG, "JPG: %uKB %ums", (uint32_t) (fb_len/1024), (uint32_t) ((fr_end - fr_start) / 1000));
+    else{
+        ESP_LOGE(TAG, "Camera capture failed");
+        httpd_resp_send_500(req);
+        res = ESP_FAIL;
+    }
+
+    pmstructInclui(&pm,1,13);
     return res;
 }
 
 esp_err_t settings_handler(httpd_req_t *req) {
+    pmstructInclui(&pm,0,14);
     esp_err_t res = ESP_OK;
     size_t buf_len = httpd_req_get_url_query_len(req) + 1;
     if (buf_len > 1) {
@@ -220,13 +244,18 @@ esp_err_t settings_handler(httpd_req_t *req) {
         }
     }
     httpd_resp_send_chunk(req, NULL, 0);
+    pmstructInclui(&pm,1,14);
     return res;
 }
 
 esp_err_t toggle_light_handler(httpd_req_t* req) {
+  pmstructInclui(&pm,0,15);
     esp_err_t res = ESP_OK;
     toggle_light();
-    httpd_resp_send_chunk(req, NULL, 0);
+    char ret[]="Luz Alterou";
+    httpd_resp_send(req, ret, sizeof(ret));
+    ESP_LOGI(TAG, "Luz Alterada");
+    pmstructInclui(&pm,1,15);
     return res;
 }
 
@@ -236,11 +265,11 @@ static const httpd_uri_t stream_jpeg_uri = {
     .handler   = stream_jpeg_handler
 };
 
-static const httpd_uri_t capture_bmp_uri = {
+/*static const httpd_uri_t capture_bmp_uri = {
     .uri       = "/capture/bmp",
     .method    = HTTP_GET,
     .handler   = capture_bmp_handler
-};
+};*/
 
 static const httpd_uri_t capture_jpeg_uri = {
     .uri       = "/capture/jpeg",
@@ -296,11 +325,12 @@ httpd_handle_t start_webserver() {
             &disconnect_event_handler, &server));
         ESP_LOGI(TAG, "registering uri handlers");
         httpd_register_uri_handler(server, &stream_jpeg_uri);
-        httpd_register_uri_handler(server, &capture_bmp_uri);
+        //httpd_register_uri_handler(server, &capture_bmp_uri);
         httpd_register_uri_handler(server, &capture_jpeg_uri);
         httpd_register_uri_handler(server, &settings_uri);
         httpd_register_uri_handler(server, &toggle_light_uri);
 	ota_register_uri_handler(&server);
+	pmview_register_uri_handler(&server);
         return server;
     }
     ESP_LOGI(TAG, "error starting server!");
