@@ -260,7 +260,7 @@ esp_err_t toggle_light_handler(httpd_req_t* req) {
 }
 
 static const httpd_uri_t stream_jpeg_uri = {
-    .uri       = "/stream/jpeg",
+    .uri       = "/stream",
     .method    = HTTP_GET,
     .handler   = stream_jpeg_handler
 };
@@ -272,7 +272,7 @@ static const httpd_uri_t stream_jpeg_uri = {
 };*/
 
 static const httpd_uri_t capture_jpeg_uri = {
-    .uri       = "/capture/jpeg",
+    .uri       = "/capture",
     .method    = HTTP_GET,
     .handler   = capture_jpeg_handler
 };
